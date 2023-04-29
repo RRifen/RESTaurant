@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.VarbinaryJdbcType;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "menu_item")
@@ -28,6 +29,9 @@ public class MenuItem {
     @Column(name = "image")
     private byte[] image;
 
+    @ManyToMany(mappedBy = "menuItems")
+    private List<MenuOrder> menuOrders;
+
     public MenuItem() {
     }
 
@@ -35,6 +39,14 @@ public class MenuItem {
         this.title = title;
         this.description = description;
         this.image = image;
+    }
+
+    public List<MenuOrder> getMenuOrders() {
+        return menuOrders;
+    }
+
+    public void setMenuOrders(List<MenuOrder> menuOrders) {
+        this.menuOrders = menuOrders;
     }
 
     public int getId() {
