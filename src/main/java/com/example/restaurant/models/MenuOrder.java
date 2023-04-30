@@ -2,7 +2,7 @@ package com.example.restaurant.models;
 
 import jakarta.persistence.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -15,13 +15,13 @@ public class MenuOrder {
     private int id;
 
     @Column(name = "ordered_at")
-    private Timestamp timestamp;
+    private LocalDateTime orderedAt;
 
     @ManyToMany
     @JoinTable(
             name = "menu_order__menu_item",
-            joinColumns = @JoinColumn(name = "menu_item_id"),
-            inverseJoinColumns = @JoinColumn(name = "menu_order_id")
+            joinColumns = @JoinColumn(name = "menu_order_id"),
+            inverseJoinColumns = @JoinColumn(name = "menu_item_id")
     )
     private List<MenuItem> menuItems;
 
@@ -32,8 +32,8 @@ public class MenuOrder {
     public MenuOrder() {
     }
 
-    public MenuOrder(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public MenuOrder(LocalDateTime orderedAt) {
+        this.orderedAt = orderedAt;
     }
 
     public Person getCustomer() {
@@ -60,19 +60,19 @@ public class MenuOrder {
         this.id = id;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
+    public LocalDateTime getOrderedAt() {
+        return orderedAt;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setOrderedAt(LocalDateTime orderedAt) {
+        this.orderedAt = orderedAt;
     }
 
     @Override
     public String toString() {
         return "MenuOrder{" +
                 "id=" + id +
-                ", timestamp=" + timestamp +
+                ", timestamp=" + orderedAt +
                 '}';
     }
 }

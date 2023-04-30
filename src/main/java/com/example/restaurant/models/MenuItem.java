@@ -2,10 +2,7 @@ package com.example.restaurant.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.type.descriptor.jdbc.VarbinaryJdbcType;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -24,21 +21,15 @@ public class MenuItem {
     @Column(name = "description")
     private String description;
 
-    @Lob
-    @JdbcType(VarbinaryJdbcType.class)
-    @Column(name = "image")
-    private byte[] image;
-
     @ManyToMany(mappedBy = "menuItems")
     private List<MenuOrder> menuOrders;
 
     public MenuItem() {
     }
 
-    public MenuItem(String title, String description, byte[] image) {
+    public MenuItem(String title, String description) {
         this.title = title;
         this.description = description;
-        this.image = image;
     }
 
     public List<MenuOrder> getMenuOrders() {
@@ -73,21 +64,12 @@ public class MenuItem {
         this.description = description;
     }
 
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
     @Override
     public String toString() {
         return "MenuItem{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", image=" + Arrays.toString(image) +
                 '}';
     }
 }
