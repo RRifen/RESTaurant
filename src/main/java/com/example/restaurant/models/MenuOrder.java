@@ -25,11 +25,23 @@ public class MenuOrder {
     )
     private List<MenuItem> menuItems;
 
+    @ManyToOne
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
+    private Person customer;
+
     public MenuOrder() {
     }
 
     public MenuOrder(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Person getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Person customer) {
+        this.customer = customer;
     }
 
     public List<MenuItem> getMenuItems() {

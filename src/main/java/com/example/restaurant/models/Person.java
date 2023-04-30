@@ -3,6 +3,8 @@ package com.example.restaurant.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.List;
+
 @Entity
 @Table(name = "person")
 public class Person {
@@ -25,6 +27,9 @@ public class Person {
     @NotEmpty
     private String role;
 
+    @OneToMany(mappedBy = "customer")
+    private List<MenuOrder> orders;
+
     public Person() {
     }
 
@@ -32,6 +37,14 @@ public class Person {
         this.login = login;
         this.password = password;
         this.role = role;
+    }
+
+    public List<MenuOrder> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<MenuOrder> orders) {
+        this.orders = orders;
     }
 
     public int getId() {
