@@ -1,10 +1,10 @@
 package com.example.restaurant.util;
 
-public class MenuOrderErrorResponse {
+public class ErrorResponse {
     private String message;
     private long timestamp;
 
-    public MenuOrderErrorResponse(String message, long timestamp) {
+    public ErrorResponse(String message, long timestamp) {
         this.message = message;
         this.timestamp = timestamp;
     }

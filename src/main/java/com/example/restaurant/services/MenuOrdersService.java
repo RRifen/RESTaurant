@@ -1,6 +1,5 @@
 package com.example.restaurant.services;
 
-import com.example.restaurant.DTO.MenuItemIdDTO;
 import com.example.restaurant.DTO.MenuOrderPostDTO;
 import com.example.restaurant.models.MenuItem;
 import com.example.restaurant.models.MenuOrder;
@@ -65,10 +64,10 @@ public class MenuOrdersService {
 
         List<MenuItem> menuItems = new ArrayList<>();
 
-        for (MenuItemIdDTO menuItemIdDTO: menuOrderPostDTO.getMenuItemsId()) {
-            menuItems.add(menuItemRepository.findById(menuItemIdDTO.getId()).orElseThrow(
+        for (Integer id: menuOrderPostDTO.getMenuItemsId()) {
+            menuItems.add(menuItemRepository.findById(id).orElseThrow(
                     () -> new MenuOrderNotCreatedException("Menu Item with id " +
-                            menuItemIdDTO.getId() + " doesn't exist")));
+                            id + " doesn't exist")));
         }
 
         menuOrder.setMenuItems(menuItems);

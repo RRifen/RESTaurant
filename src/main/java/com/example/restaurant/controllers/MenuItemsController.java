@@ -1,13 +1,11 @@
 package com.example.restaurant.controllers;
 
-import com.example.restaurant.DTO.MenuOrderGetDTO;
-import com.example.restaurant.DTO.MenuOrderPostDTO;
-import com.example.restaurant.services.MenuOrdersService;
-import com.example.restaurant.util.ConverterToDTO;
-import com.example.restaurant.util.ErrorResponse;
-import com.example.restaurant.util.MenuOrderNotCreatedException;
-import com.example.restaurant.util.MenuOrderNotFoundException;
+import com.example.restaurant.DTO.MenuItemGetDTO;
+import com.example.restaurant.DTO.MenuItemPostDTO;
+import com.example.restaurant.services.MenuItemService;
+import com.example.restaurant.util.*;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -15,42 +13,36 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/MenuOrders")
-public class MenuOrdersController {
+@RequestMapping("/MenuItems")
+public class MenuItemsController {
 
-    private final MenuOrdersService menuOrdersService;
+    private final MenuItemService menuItemService;
     private final ConverterToDTO converterToDTO;
 
-    public MenuOrdersController(MenuOrdersService menuOrdersService, ConverterToDTO converterToDTO) {
-        this.menuOrdersService = menuOrdersService;
+    @Autowired
+    public MenuItemsController(MenuItemService menuItemService, ConverterToDTO converterToDTO) {
+        this.menuItemService = menuItemService;
         this.converterToDTO = converterToDTO;
     }
 
     @GetMapping()
-    public List<MenuOrderGetDTO> getOrders(@RequestParam(value = "person_id") Optional<String> person_id) {
-        if (person_id.isEmpty()) {
-            return menuOrdersService.findAll().stream().map(converterToDTO::convertToMenuOrderGetDTO)
-                    .collect(Collectors.toList());
-        }
-        else {
-            int id = Integer.parseInt(person_id.get()); // Possible NumberFormatException is handled by
-            return menuOrdersService.findByPersonId(id).stream().map(converterToDTO::convertToMenuOrderGetDTO)
-                    .collect(Collectors.toList());
-        }
+    public List<MenuItemGetDTO> getMenuItems() {
+        return menuItemService.findAll().stream().map(converterToDTO::convertToMenuItemGetDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public MenuOrderGetDTO getOrder(@PathVariable("id") int id) {
-        return converterToDTO.convertToMenuOrderGetDTO(menuOrdersService.findOne(id));
+    public MenuItemGetDTO getOrder(@PathVariable("id") int id) {
+        return converterToDTO.convertToMenuItemGetDTO(menuItemService.findOne(id));
     }
 
     @PostMapping()
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid MenuOrderPostDTO menuOrderPostDTO,
-                                            BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid MenuItemPostDTO menuItemPostDTO,
+                                             BindingResult bindingResult) {
+        // TODO - Вынести создание errorMessage в отдельный метод
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
 
@@ -61,25 +53,24 @@ public class MenuOrdersController {
                         .append(";");
             }
 
-            throw new MenuOrderNotCreatedException(errorMessage.toString());
+            throw new MenuItemNotCreatedException(errorMessage.toString());
         }
 
-        menuOrdersService.save(menuOrderPostDTO);
+        menuItemService.save(menuItemPostDTO);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
-        menuOrdersService.delete(id);
+        menuItemService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-
     @ExceptionHandler
-    private ResponseEntity<ErrorResponse> handleException(MenuOrderNotFoundException ignoredE) {
+    private ResponseEntity<ErrorResponse> handleException(MenuItemNotFoundException ignoredE) {
         ErrorResponse response = new ErrorResponse(
-                "Order with this id was not found",
+                "MenuItem with this id was not found",
                 System.currentTimeMillis()
         );
 
@@ -88,7 +79,7 @@ public class MenuOrdersController {
     }
 
     @ExceptionHandler
-    private ResponseEntity<ErrorResponse> handleException(MenuOrderNotCreatedException e) {
+    private ResponseEntity<ErrorResponse> handleException(MenuItemNotCreatedException e) {
         ErrorResponse response = new ErrorResponse(
                 e.getMessage(),
                 System.currentTimeMillis()
@@ -97,6 +88,7 @@ public class MenuOrdersController {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    // TODO - Вынести в отдельный метод
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(NumberFormatException e) {
         ErrorResponse response = new ErrorResponse(
@@ -106,5 +98,4 @@ public class MenuOrdersController {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
 }

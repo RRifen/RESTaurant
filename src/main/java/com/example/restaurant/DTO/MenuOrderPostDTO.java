@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MenuOrderPostDTO {
     private  int personId;
-    private List<MenuItemIdDTO> menuItemsId;
+    private List<Integer> menuItemsId;
 
     public int getPersonId() {
         return personId;
@@ -14,11 +14,11 @@ public class MenuOrderPostDTO {
         this.personId = personId;
     }
 
-    public List<MenuItemIdDTO> getMenuItemsId() {
+    public List<Integer> getMenuItemsId() {
         return menuItemsId;
     }
 
-    public void setMenuItemsId(List<MenuItemIdDTO> menuItemsId) {
+    public void setMenuItemsId(List<Integer> menuItemsId) {
         this.menuItemsId = menuItemsId;
     }
 }
