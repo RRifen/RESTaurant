@@ -24,7 +24,6 @@ public class Person {
     private String password;
 
     @Column(name = "role")
-    @NotEmpty
     private String role;
 
     @OneToMany(mappedBy = "customer")
