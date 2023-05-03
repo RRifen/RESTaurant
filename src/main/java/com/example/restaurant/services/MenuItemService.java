@@ -3,7 +3,7 @@ package com.example.restaurant.services;
 import com.example.restaurant.DTO.MenuItemPostDTO;
 import com.example.restaurant.models.MenuItem;
 import com.example.restaurant.repositories.MenuItemRepository;
-import com.example.restaurant.util.MenuItemNotFoundException;
+import com.example.restaurant.util.exceptions.MenuItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

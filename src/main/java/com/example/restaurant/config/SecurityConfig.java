@@ -35,11 +35,12 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/login", "/registration", "/error", "styles").permitAll()
+                .requestMatchers("/login", "/registration", "/error").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .formLogin().loginPage("/login")
                 .loginProcessingUrl("/process_login")
+                .failureUrl("/login?error")
                 .and()
                 .logout()
                 .logoutUrl("/logout")

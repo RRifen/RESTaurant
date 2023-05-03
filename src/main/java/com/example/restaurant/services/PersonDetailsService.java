@@ -36,4 +36,18 @@ public class PersonDetailsService implements UserDetailsService {
         return peopleRepository.findByLogin(login).isPresent();
     }
 
+    public boolean checkCoincidenceByUsername(String usernameCurrent, String usernameToFind) {
+        Optional<Person> personOptional = peopleRepository.findByLogin(usernameToFind);
+        if (personOptional.isPresent()) {
+            Person person = personOptional.get();
+            return person.getLogin().equals(usernameCurrent);
+        }
+        return false;
+    }
+
+    public Optional<Person> findOneByUsername(String username) {
+        return peopleRepository.findByLogin(username);
+    }
+
+
 }

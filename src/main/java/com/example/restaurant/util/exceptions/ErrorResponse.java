@@ -1,4 +1,4 @@
-package com.example.restaurant.util;
+package com.example.restaurant.util.exceptions;
 
 public class ErrorResponse {
     private String message;

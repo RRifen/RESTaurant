@@ -3,19 +3,23 @@ package com.example.restaurant.controllers;
 import com.example.restaurant.DTO.MenuOrderGetDTO;
 import com.example.restaurant.DTO.MenuOrderPostDTO;
 import com.example.restaurant.services.MenuOrdersService;
+import com.example.restaurant.services.PersonDetailsService;
 import com.example.restaurant.util.ConverterToDTO;
-import com.example.restaurant.util.ErrorResponse;
-import com.example.restaurant.util.MenuOrderNotCreatedException;
-import com.example.restaurant.util.MenuOrderNotFoundException;
+import com.example.restaurant.util.exceptions.BadRequest;
+import com.example.restaurant.util.exceptions.ErrorResponse;
+import com.example.restaurant.util.exceptions.MenuOrderNotCreatedException;
+import com.example.restaurant.util.exceptions.MenuOrderNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,27 +27,49 @@ import java.util.stream.Collectors;
 public class MenuOrdersController {
 
     private final MenuOrdersService menuOrdersService;
+    private final PersonDetailsService personDetailsService;
     private final ConverterToDTO converterToDTO;
 
-    public MenuOrdersController(MenuOrdersService menuOrdersService, ConverterToDTO converterToDTO) {
+    public MenuOrdersController(MenuOrdersService menuOrdersService, PersonDetailsService personDetailsService, ConverterToDTO converterToDTO) {
         this.menuOrdersService = menuOrdersService;
+        this.personDetailsService = personDetailsService;
         this.converterToDTO = converterToDTO;
     }
 
     @GetMapping()
-    public List<MenuOrderGetDTO> getOrders(@RequestParam(value = "person_id") Optional<String> person_id) {
-        if (person_id.isEmpty()) {
-            return menuOrdersService.findAll().stream().map(converterToDTO::convertToMenuOrderGetDTO)
-                    .collect(Collectors.toList());
+    public List<MenuOrderGetDTO> getOrders(@RequestParam(value = "person_name", required = false) String personName,
+                                           Authentication authentication) {
+        if (personName == null) {
+            if (((UserDetails)authentication.getPrincipal()).getAuthorities().contains("ROLE_ADMIN")) {
+                return menuOrdersService.findAll().stream().map(converterToDTO::convertToMenuOrderGetDTO)
+                        .collect(Collectors.toList());
+            }
+            else {
+                throw new BadRequest("You are not an admin");
+            }
         }
         else {
-            int id = Integer.parseInt(person_id.get()); // Possible NumberFormatException is handled by
-            return menuOrdersService.findByPersonId(id).stream().map(converterToDTO::convertToMenuOrderGetDTO)
-                    .collect(Collectors.toList());
+            if (personDetailsService.checkCoincidenceByUsername(
+                    authentication.getName(),
+                    personName
+            )) {
+                int personId = personDetailsService.findOneByUsername(personName).get().getId();
+                return menuOrdersService.findByPersonId(personId).stream().map(converterToDTO::convertToMenuOrderGetDTO)
+                        .collect(Collectors.toList());
+            }
+            else if (personDetailsService.findOneByUsername(authentication.getName()).get().getRole().equals("ROLE_ADMIN")) {
+                int personId = personDetailsService.findOneByUsername(personName).get().getId();
+                return menuOrdersService.findByPersonId(personId).stream().map(converterToDTO::convertToMenuOrderGetDTO)
+                        .collect(Collectors.toList());
+            }
+            else {
+                throw new BadRequest("Permission denied");
+            }
         }
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public MenuOrderGetDTO getOrder(@PathVariable("id") int id) {
         return converterToDTO.convertToMenuOrderGetDTO(menuOrdersService.findOne(id));
     }
@@ -105,6 +131,16 @@ public class MenuOrdersController {
         );
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<ErrorResponse> handleException(BadRequest e) {
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
 }

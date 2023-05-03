@@ -4,10 +4,14 @@ import com.example.restaurant.DTO.MenuItemGetDTO;
 import com.example.restaurant.DTO.MenuItemPostDTO;
 import com.example.restaurant.services.MenuItemService;
 import com.example.restaurant.util.*;
+import com.example.restaurant.util.exceptions.ErrorResponse;
+import com.example.restaurant.util.exceptions.MenuItemNotCreatedException;
+import com.example.restaurant.util.exceptions.MenuItemNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -35,14 +39,14 @@ public class MenuItemsController {
     }
 
     @GetMapping("/{id}")
-    public MenuItemGetDTO getOrder(@PathVariable("id") int id) {
+    public MenuItemGetDTO getItem(@PathVariable("id") int id) {
         return converterToDTO.convertToMenuItemGetDTO(menuItemService.findOne(id));
     }
 
-    @PostMapping()
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid MenuItemPostDTO menuItemPostDTO,
                                              BindingResult bindingResult) {
-        // TODO - Вынести создание errorMessage в отдельный метод
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
 
@@ -62,6 +66,7 @@ public class MenuItemsController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         menuItemService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
