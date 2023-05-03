@@ -13,6 +13,7 @@ import java.util.List;
 public class ConverterToDTO {
 
     public ConverterToDTO() {
+
     }
 
     public MenuOrderGetDTO convertToMenuOrderGetDTO(MenuOrder menuOrder) {
