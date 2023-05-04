@@ -27,7 +27,7 @@ public class PersonValidator implements Validator {
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         Person person = (Person)target;
 
-        if (personDetailsService.checkExistenceByLogin(person.getLogin())) {
+        if (personDetailsService.checkExistenceByUsername(person.getLogin())) {
             errors.rejectValue("login", "",
                     "Человек с таким именем пользователя уже существует");
         }

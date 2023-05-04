@@ -16,6 +16,14 @@ public class ConverterToDTO {
 
     }
 
+    public List<MenuOrderGetDTO> convertToMenuOrdersGetDTO(List<MenuOrder> menuOrders) {
+        List<MenuOrderGetDTO> menuOrderGetDTOS = new ArrayList<>();
+        for (MenuOrder menuOrder : menuOrders) {
+            menuOrderGetDTOS.add(convertToMenuOrderGetDTO(menuOrder));
+        }
+        return menuOrderGetDTOS;
+    }
+
     public MenuOrderGetDTO convertToMenuOrderGetDTO(MenuOrder menuOrder) {
         MenuOrderGetDTO menuOrderGetDTO = new MenuOrderGetDTO();
         menuOrderGetDTO.setId(menuOrder.getId());
