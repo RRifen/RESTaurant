@@ -4,7 +4,7 @@ import com.example.restaurant.DTO.MenuItemGetDTO;
 import com.example.restaurant.DTO.MenuItemPostDTO;
 import com.example.restaurant.services.MenuItemService;
 import com.example.restaurant.util.*;
-import com.example.restaurant.util.exceptions.ErrorResponse;
+import com.example.restaurant.util.ErrorResponse;
 import com.example.restaurant.util.exceptions.MenuItemNotCreatedException;
 import com.example.restaurant.util.exceptions.MenuItemNotFoundException;
 import jakarta.validation.Valid;
@@ -48,16 +48,7 @@ public class MenuItemsController {
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid MenuItemPostDTO menuItemPostDTO,
                                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            StringBuilder errorMessage = new StringBuilder();
-
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for(FieldError error: errors) {
-                errorMessage.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-
-            throw new MenuItemNotCreatedException(errorMessage.toString());
+            generateValidationErrorMessage(bindingResult);
         }
 
         menuItemService.save(menuItemPostDTO);
@@ -71,6 +62,22 @@ public class MenuItemsController {
         menuItemService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<HttpStatus> updateMenuItem(@PathVariable("id") int id,
+                                                     @RequestBody @Valid MenuItemPostDTO menuItemPostDTO,
+                                                     BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            generateValidationErrorMessage(bindingResult);
+        }
+
+        menuItemService.update(menuItemPostDTO, id);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
 
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(MenuItemNotFoundException ignoredE) {
@@ -93,7 +100,6 @@ public class MenuItemsController {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // TODO - Вынести в отдельный метод
     @ExceptionHandler
     private ResponseEntity<ErrorResponse> handleException(NumberFormatException e) {
         ErrorResponse response = new ErrorResponse(
@@ -102,5 +108,17 @@ public class MenuItemsController {
         );
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    private static void generateValidationErrorMessage(BindingResult bindingResult) {
+        StringBuilder errorMessage = new StringBuilder();
+
+        List<FieldError> errors = bindingResult.getFieldErrors();
+        for(FieldError error: errors) {
+            errorMessage.append(error.getField())
+                    .append(" - ").append(error.getDefaultMessage())
+                    .append(";");
+        }
+
+        throw new MenuItemNotCreatedException(errorMessage.toString());
     }
 }

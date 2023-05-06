@@ -6,6 +6,7 @@ import com.example.restaurant.models.Person;
 import com.example.restaurant.services.MenuOrdersService;
 import com.example.restaurant.services.PeopleService;
 import com.example.restaurant.util.ConverterToDTO;
+import com.example.restaurant.util.ErrorResponse;
 import com.example.restaurant.util.exceptions.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

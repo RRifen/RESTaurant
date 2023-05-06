@@ -35,6 +35,13 @@ public class MenuItemService {
     }
 
     @Transactional
+    public void update(MenuItemPostDTO menuItemPostDTO, int id) {
+        MenuItem menuItem = createMenuItem(menuItemPostDTO);
+        menuItem.setId(id);
+        menuItemRepository.save(menuItem);
+    }
+
+    @Transactional
     public void delete(int id) {
         this.findOne(id); // Throws MenuItemNotFoundException if not found
         menuItemRepository.deleteById(id);
