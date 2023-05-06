@@ -21,15 +21,19 @@ public class MenuItem {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "img_url")
+    private String imgURL;
+
     @ManyToMany(mappedBy = "menuItems")
     private List<MenuOrder> menuOrders;
 
     public MenuItem() {
     }
 
-    public MenuItem(String title, String description) {
+    public MenuItem(String title, String description, String imgURL) {
         this.title = title;
         this.description = description;
+        this.imgURL = imgURL;
     }
 
     public List<MenuOrder> getMenuOrders() {
@@ -71,5 +75,13 @@ public class MenuItem {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public String getImgURL() {
+        return imgURL;
+    }
+
+    public void setImgURL(String imgURL) {
+        this.imgURL = imgURL;
     }
 }

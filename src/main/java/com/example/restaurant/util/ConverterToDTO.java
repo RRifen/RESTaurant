@@ -47,6 +47,7 @@ public class ConverterToDTO {
         menuItemGetDTO.setDescription(menuItem.getDescription());
         menuItemGetDTO.setTitle(menuItem.getTitle());
         menuItemGetDTO.setId(menuItem.getId());
+        menuItemGetDTO.setImgURL(menuItem.getImgURL());
         return menuItemGetDTO;
     }
 
