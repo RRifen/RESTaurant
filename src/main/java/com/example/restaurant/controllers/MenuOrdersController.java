@@ -77,16 +77,7 @@ public class MenuOrdersController {
                                             BindingResult bindingResult,
                                             Authentication authentication) {
         if (bindingResult.hasErrors()) {
-            StringBuilder errorMessage = new StringBuilder();
-
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for(FieldError error: errors) {
-                errorMessage.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-
-            throw new MenuOrderNotCreatedException(errorMessage.toString());
+            generateValidationErrorMessage(bindingResult);
         }
 
         if (authentication == null) {
@@ -104,6 +95,7 @@ public class MenuOrdersController {
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id,
@@ -172,6 +164,19 @@ public class MenuOrdersController {
         );
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    private static void generateValidationErrorMessage(BindingResult bindingResult) {
+        StringBuilder errorMessage = new StringBuilder();
+
+        List<FieldError> errors = bindingResult.getFieldErrors();
+        for(FieldError error: errors) {
+            errorMessage.append(error.getField())
+                    .append(" - ").append(error.getDefaultMessage())
+                    .append(";");
+        }
+
+        throw new MenuOrderNotCreatedException(errorMessage.toString());
     }
 
 }

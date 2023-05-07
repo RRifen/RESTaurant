@@ -12,11 +12,11 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class MenuItemService {
+public class MenuItemsService {
     private final MenuItemRepository menuItemRepository;
 
     @Autowired
-    public MenuItemService(MenuItemRepository menuItemRepository) {
+    public MenuItemsService(MenuItemRepository menuItemRepository) {
         this.menuItemRepository = menuItemRepository;
     }
 

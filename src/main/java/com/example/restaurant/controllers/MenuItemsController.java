@@ -2,7 +2,7 @@ package com.example.restaurant.controllers;
 
 import com.example.restaurant.DTO.MenuItemGetDTO;
 import com.example.restaurant.DTO.MenuItemPostDTO;
-import com.example.restaurant.services.MenuItemService;
+import com.example.restaurant.services.MenuItemsService;
 import com.example.restaurant.util.*;
 import com.example.restaurant.util.ErrorResponse;
 import com.example.restaurant.util.exceptions.MenuItemNotCreatedException;
@@ -23,24 +23,24 @@ import java.util.stream.Collectors;
 @RequestMapping("/MenuItems")
 public class MenuItemsController {
 
-    private final MenuItemService menuItemService;
+    private final MenuItemsService menuItemsService;
     private final ConverterToDTO converterToDTO;
 
     @Autowired
-    public MenuItemsController(MenuItemService menuItemService, ConverterToDTO converterToDTO) {
-        this.menuItemService = menuItemService;
+    public MenuItemsController(MenuItemsService menuItemsService, ConverterToDTO converterToDTO) {
+        this.menuItemsService = menuItemsService;
         this.converterToDTO = converterToDTO;
     }
 
     @GetMapping()
     public List<MenuItemGetDTO> getMenuItems() {
-        return menuItemService.findAll().stream().map(converterToDTO::convertToMenuItemGetDTO)
+        return menuItemsService.findAll().stream().map(converterToDTO::convertToMenuItemGetDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public MenuItemGetDTO getItem(@PathVariable("id") int id) {
-        return converterToDTO.convertToMenuItemGetDTO(menuItemService.findOne(id));
+        return converterToDTO.convertToMenuItemGetDTO(menuItemsService.findOne(id));
     }
 
     @PostMapping
@@ -51,7 +51,7 @@ public class MenuItemsController {
             generateValidationErrorMessage(bindingResult);
         }
 
-        menuItemService.save(menuItemPostDTO);
+        menuItemsService.save(menuItemPostDTO);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -59,7 +59,7 @@ public class MenuItemsController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
-        menuItemService.delete(id);
+        menuItemsService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -73,7 +73,7 @@ public class MenuItemsController {
             generateValidationErrorMessage(bindingResult);
         }
 
-        menuItemService.update(menuItemPostDTO, id);
+        menuItemsService.update(menuItemPostDTO, id);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
