@@ -83,15 +83,11 @@ public class MenuOrdersController {
         if (authentication == null) {
             throw new AuthenticationRequiredException();
         }
+
         String name = authentication.getName();
         Person person = peopleService.findByLogin(name).orElseThrow(BadUsername::new);
-        if (!person.getRole().equals("ROLE_ADMIN")) {
-            if (person.getId() != menuOrderPostDTO.getPersonId()) {
-                throw new AccessDeniedException("Access denied");
-            }
-        }
 
-        menuOrdersService.save(menuOrderPostDTO);
+        menuOrdersService.save(menuOrderPostDTO, person);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

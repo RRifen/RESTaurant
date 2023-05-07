@@ -40,6 +40,16 @@ public class AuthController {
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/fail_login")
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> loginFail() {
+        ErrorResponse response = new ErrorResponse(
+                "Wrong login or password",
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @PostMapping("/registration")
     @ResponseBody
     public ResponseEntity<HttpStatus> performRegistration(@Valid Person person,

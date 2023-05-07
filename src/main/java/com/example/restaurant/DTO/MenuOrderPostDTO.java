@@ -1,18 +1,12 @@
 package com.example.restaurant.DTO;
 
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 
 public class MenuOrderPostDTO {
-    private  int personId;
+    @NotEmpty
     private List<Integer> menuItemsId;
-
-    public int getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(int personId) {
-        this.personId = personId;
-    }
 
     public List<Integer> getMenuItemsId() {
         return menuItemsId;

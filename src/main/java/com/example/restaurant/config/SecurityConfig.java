@@ -34,13 +34,15 @@ public class SecurityConfig {
 
         http
                 .csrf().disable()
+                .cors().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/login", "/registration", "/error").permitAll()
+                .requestMatchers("/login", "/registration", "/error", "/fail_login").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/process_login")
+                .failureUrl("/fail_login")
                 .and()
                 .logout()
                 .logoutUrl("/logout");

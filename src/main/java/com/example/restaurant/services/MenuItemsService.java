@@ -38,6 +38,7 @@ public class MenuItemsService {
     public void update(MenuItemPostDTO menuItemPostDTO, int id) {
         MenuItem menuItem = createMenuItem(menuItemPostDTO);
         menuItem.setId(id);
+        menuItemRepository.findById(id).orElseThrow(MenuItemNotFoundException::new);
         menuItemRepository.save(menuItem);
     }
 
@@ -49,9 +50,9 @@ public class MenuItemsService {
 
     public MenuItem createMenuItem(MenuItemPostDTO menuItemPostDTO) {
         MenuItem menuItem = new MenuItem();
-
         menuItem.setTitle(menuItemPostDTO.getTitle());
         menuItem.setDescription(menuItemPostDTO.getDescription());
+        menuItem.setImgURL(menuItemPostDTO.getImgURL());
 
         return menuItem;
     }

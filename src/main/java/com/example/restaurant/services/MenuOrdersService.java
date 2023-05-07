@@ -3,9 +3,9 @@ package com.example.restaurant.services;
 import com.example.restaurant.DTO.MenuOrderPostDTO;
 import com.example.restaurant.models.MenuItem;
 import com.example.restaurant.models.MenuOrder;
+import com.example.restaurant.models.Person;
 import com.example.restaurant.repositories.MenuItemRepository;
 import com.example.restaurant.repositories.MenuOrderRepository;
-import com.example.restaurant.repositories.PeopleRepository;
 import com.example.restaurant.util.exceptions.MenuOrderNotCreatedException;
 import com.example.restaurant.util.exceptions.MenuOrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,11 @@ import java.util.List;
 public class MenuOrdersService {
     private final MenuOrderRepository menuOrderRepository;
     private final MenuItemRepository menuItemRepository;
-    private final PeopleRepository peopleRepository;
 
     @Autowired
-    public MenuOrdersService(MenuOrderRepository menuOrderRepository, MenuItemRepository menuItemRepository, PeopleRepository peopleRepository) {
+    public MenuOrdersService(MenuOrderRepository menuOrderRepository, MenuItemRepository menuItemRepository) {
         this.menuOrderRepository = menuOrderRepository;
         this.menuItemRepository = menuItemRepository;
-        this.peopleRepository = peopleRepository;
     }
 
     public MenuOrder findOne(int id) {
@@ -43,8 +41,8 @@ public class MenuOrdersService {
     }
 
     @Transactional
-    public void save(MenuOrderPostDTO menuOrderPostDTO) {
-        MenuOrder menuOrder = createMenuOrder(menuOrderPostDTO);
+    public void save(MenuOrderPostDTO menuOrderPostDTO, Person person) {
+        MenuOrder menuOrder = createMenuOrder(menuOrderPostDTO, person);
         menuOrderRepository.save(menuOrder);
     }
 
@@ -54,12 +52,9 @@ public class MenuOrdersService {
         menuOrderRepository.deleteById(id);
     }
 
-    public MenuOrder createMenuOrder(MenuOrderPostDTO menuOrderPostDTO) {
+    public MenuOrder createMenuOrder(MenuOrderPostDTO menuOrderPostDTO, Person person) {
         MenuOrder menuOrder = new MenuOrder();
-        menuOrder.setCustomer(peopleRepository.findById(menuOrderPostDTO.getPersonId()).orElseThrow(
-                () -> new MenuOrderNotCreatedException("Person with id " +
-                        menuOrderPostDTO.getPersonId() + " doesn't exist")
-        ));
+        menuOrder.setCustomer(person);
         menuOrder.setOrderedAt(LocalDateTime.now());
 
         List<MenuItem> menuItems = new ArrayList<>();

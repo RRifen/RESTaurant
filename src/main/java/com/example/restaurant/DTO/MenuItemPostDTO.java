@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 public class MenuItemPostDTO {
     @NotEmpty
     private String title;
-
     private String description;
-
     private String imgURL;
 
     public String getTitle() {
