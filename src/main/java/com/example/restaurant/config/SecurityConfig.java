@@ -39,11 +39,11 @@ public class SecurityConfig {
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .formLogin()
+                .loginPage("/login")
                 .loginProcessingUrl("/process_login")
                 .and()
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login");
+                .logoutUrl("/logout");
 
         return http.build();
     }

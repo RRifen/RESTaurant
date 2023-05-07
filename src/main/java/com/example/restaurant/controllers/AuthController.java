@@ -2,14 +2,19 @@ package com.example.restaurant.controllers;
 
 import com.example.restaurant.models.Person;
 import com.example.restaurant.services.RegistrationService;
+import com.example.restaurant.util.ErrorResponse;
 import com.example.restaurant.util.PersonValidator;
+import com.example.restaurant.util.exceptions.LoginAlreadyTakenException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class AuthController {
@@ -23,27 +28,53 @@ public class AuthController {
         this.personValidator = personValidator;
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "login";
+    @GetMapping("/")
+    @ResponseBody
+    public ResponseEntity<HttpStatus> perform() {
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/registration")
-    public String registrationPage(@ModelAttribute("person") Person person) {
-        return "registration";
+    @GetMapping("/login")
+    @ResponseBody
+    public ResponseEntity<HttpStatus> performLogin() {
+        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/registration")
-    public String performRegistration(@ModelAttribute("person") @Valid Person person,
-                                      BindingResult bindingResult) {
+    @ResponseBody
+    public ResponseEntity<HttpStatus> performRegistration(@Valid Person person,
+                                                          BindingResult bindingResult) {
         personValidator.validate(person, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return "registration";
+            generateValidationErrorMessage(bindingResult);
         }
 
         registrationService.register(person);
 
-        return "redirect:login";
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<ErrorResponse> handleException(LoginAlreadyTakenException e) {
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    private static void generateValidationErrorMessage(BindingResult bindingResult) {
+        StringBuilder errorMessage = new StringBuilder();
+
+        List<FieldError> errors = bindingResult.getFieldErrors();
+        for(FieldError error: errors) {
+            errorMessage.append(error.getField())
+                    .append(" - ").append(error.getDefaultMessage())
+                    .append(";");
+        }
+
+        throw new LoginAlreadyTakenException(errorMessage.toString());
     }
 }
