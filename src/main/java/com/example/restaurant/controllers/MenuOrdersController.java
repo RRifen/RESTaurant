@@ -56,6 +56,7 @@ public class MenuOrdersController {
     }
 
     @GetMapping("/current")
+    @CrossOrigin(allowCredentials = "true", origins = "http://localhost:3000", exposedHeaders = {"Access-Control-Allow-Origin","Access-Control-Allow-Credentials"})
     public List<MenuOrderGetDTO> getCurrentOrder(Authentication authentication) {
         if (authentication == null) {
             throw new AuthenticationRequiredException();

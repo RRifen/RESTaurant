@@ -33,6 +33,7 @@ public class MenuItemsController {
     }
 
     @GetMapping()
+    @CrossOrigin(allowCredentials = "true", origins = "http://localhost:3000", exposedHeaders = {"Access-Control-Allow-Origin","Access-Control-Allow-Credentials"})
     public List<MenuItemGetDTO> getMenuItems() {
         return menuItemsService.findAll().stream().map(converterToDTO::convertToMenuItemGetDTO)
                 .collect(Collectors.toList());
